@@ -1,0 +1,17 @@
+{
+  "dataset": "MaleCNS v1.0",
+  "neuralStepMs": 15.0,
+  "sensoryBridge": {
+    "source": "FlyGym live body pose and world target geometry",
+    "target": "3,335 mapped MaleCNS R1-R6 neurons",
+    "status": "engineered geometric retinal projection"
+  },
+  "motorBridge": {
+    "forward": "DNp09 and oDN1 rates opposed by MDN",
+    "turning": "bilateral DNa02 population difference",
+    "target": "FlyGym HybridTurningController",
+    "status": "engineered descending-neuron decoder"
+  },
+  "scientificStatus": "Measured MaleCNS wiring with modeled LIF dynamics and engineered sensory and motor interfaces"
+}
+

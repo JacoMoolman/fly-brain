@@ -1,0 +1,26 @@
+[project]
+name = "local-male-fly"
+version = "0.2.0"
+description = "Local MaleCNS v1.0 and FlyGym v2.1.0 closed-loop viewer"
+requires-python = ">=3.13,<3.14"
+dependencies = [
+    "fastapi",
+    "numba>=0.65.1",
+    "numpy>=2.0,<3.0",
+    "pillow>=11,<13",
+    "uvicorn[standard]",
+    "warp-lang>=1.14,<2",
+]
+
+[project.scripts]
+flybrain-server = "flybrain_local.server:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

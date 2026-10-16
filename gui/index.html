@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#080a0d">
+  <title>MaleCNS × FlyGym</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='11' fill='%236de8e8'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/static/styles.css?v=15">
+</head>
+<body>
+  <header>
+    <div>
+      <p class="kicker">LOCAL CLOSED LOOP</p>
+      <h1>MaleCNS v1.0 <span>×</span> FlyGym 2.1.0</h1>
+    </div>
+    <button class="focus-pair" data-fullscreen="bodybrain" data-label="Fly + brain" data-exit-label="Exit fly + brain"
+      title="Full screen: 3D fly with the brain activity graph underneath">Fly + brain</button>
+    <div class="live-status"><i id="statusDot"></i><span id="statusText">INITIALIZING</span></div>
+  </header>
+
+  <main>
+    <section class="workspace brain-workspace">
+      <div class="section-head">
+        <div><small>01</small><strong>Male central nervous system</strong></div>
+        <span id="brainBackend">INITIALIZING COMPUTE</span>
+        <button data-fullscreen="brain" aria-label="Full screen brain view">Full screen</button>
+      </div>
+      <div class="body-stage">
+        <canvas id="brainCanvas" aria-label="Live MaleCNS neural activity"></canvas>
+        <div class="brain-tools">
+          <label><input type="checkbox" id="showSomata" checked> Cell bodies</label>
+          <label><input type="checkbox" id="showNeurites" checked> Internal branches</label>
+          <label><input type="checkbox" id="brainXray" checked> X-ray</label>
+          <label><input type="checkbox" id="brainSpin" checked> Auto-rotate</label>
+          <label><input type="checkbox" id="activeOnly"> Active pathways only</label>
+          <small>Active only: loaded neurons firing in the latest step. Blank while paused.</small>
+          <label>Cutaway <input type="range" id="brainCut" min="-3" max="3" step="0.02" value="3"></label>
+          <label>Branches <select id="morphologyCount"><option value="512">512-neuron overview</option><option value="2048">2,048 neurons</option><option value="8192">8,192 neurons</option><option value="all">All neurons (large download)</option></select></label>
+          <button id="stopMorphology">Stop loading</button>
+          <form id="neuronForm"><label>Full neuron <input id="neuronId" inputmode="numeric" placeholder="MaleCNS body ID" aria-label="MaleCNS neuron body ID"></label><button>Inspect</button></form>
+          <button id="clearNeuron" hidden>Back to overview</button>
+          <output id="morphologyStatus" aria-live="polite">Loading measured internal branches...</output>
+          <a href="https://male-cns.janelia.org/download/" target="_blank" rel="noopener">MaleCNS / Janelia, CC-BY. Overview samples branches; inspect a neuron for full detail.</a>
+        </div>
+        <div class="drag-hint">DRAG TO ORBIT &middot; SCROLL TO ZOOM</div>
+        <div class="legend" id="brainLegend"></div>
+      </div>
+      <div class="metrics">
+        <div><b id="activeNeurons">0</b><span>activated neurons</span></div>
+        <div><b id="frameSpikes">0</b><span>spikes this step</span></div>
+        <div><b id="brainTime">0 ms</b><span>neural time</span></div>
+      </div>
+    </section>
+
+    <div class="bridge" aria-label="Closed loop signal bridge">
+      <span>VISION</span>
+      <div><i></i></div>
+      <span>MOTOR</span>
+    </div>
+
+    <section class="workspace body-workspace">
+      <div class="section-head">
+        <div><small>02</small><strong>MuJoCo biomechanical body</strong></div>
+        <span>LIVE PHYSICS</span>
+        <button data-fullscreen="physics" aria-label="Full screen physics view">Full screen</button>
+      </div>
+      <div class="body-stage">
+        <canvas id="bodyCanvas" aria-label="Interactive live FlyGym body"></canvas>
+        <output id="wingReadout" title="Measured neural rates and physical joint angles. The neural-to-actuator conversion uses engineered gains.">Wings: waiting for neural output</output>
+        <div class="frame-waiting" id="frameWaiting">BUILDING MUJOCO WORLD</div>
+        <div class="drag-hint">DRAG TO ORBIT &middot; SCROLL TO ZOOM</div>
+      </div>
+      <div class="metrics">
+        <div><b id="bodyTime">0.00 s</b><span>body time</span></div>
+        <div><b id="distance">0.000 mm</b><span>displacement</span></div>
+        <div><b id="loopRate">0.0 Hz</b><span id="simulationSpeed">closed-loop rate</span></div>
+      </div>
+    </section>
+
+    <section class="workspace vision-workspace">
+      <div class="section-head">
+        <div><small>03</small><strong>Fly vision</strong></div>
+        <span class="eye-luminance" title="Mean light level per eye, 0 dark to 1 bright">LUM L <b id="lumLeftValue">-</b> R <b id="lumRightValue">-</b></span>
+        <button data-fullscreen="vision" aria-label="Full screen vision view">Full screen</button>
+      </div>
+      <div class="vision-stage">
+        <div class="vision-label" title="Display only: the arena around the fly's head, resampled into ~4.5 degree hexagonal facets for two compound eyes. Numbers and bars come from the simulated eye.">Compound-eye view <span>L eye &middot; front &middot; R eye</span></div>
+        <div class="eye-view"><canvas id="eyeView" role="img" aria-label="Arena seen from the fly's head as two compound eyes of hexagonal facets"></canvas><output id="eyeViewStatus">Waiting for the fly body</output></div>
+        <div class="vision-label">Facets landing on each object <span id="eyeRayCount">waiting</span></div>
+        <div class="object-bars" id="objectBars"></div>
+      </div>
+    </section>
+  </main>
+
+  <section class="live-traces" aria-label="Live simulation graphs">
+    <div class="trace-toolbar">
+      <strong>LIVE SIGNALS</strong>
+      <span id="traceClock">Collecting live samples</span>
+      <label>History <select id="traceWindow"><option value="30">30 seconds</option><option value="60">60 seconds</option><option value="120">2 minutes</option><option value="300" selected>5 minutes</option></select></label>
+      <button id="toggleTraces" aria-expanded="true">Hide graphs</button>
+    </div>
+    <div class="trace-panels" id="tracePanels">
+      <figure class="trace-panel"><figcaption><strong>Brain activity</strong><output id="brainTraceValue">Waiting</output></figcaption><p><span class="trace-left">Mean firing rate, Hz (bright, left axis)</span> <span class="trace-right">Neurons firing, % (dim, right axis)</span></p><canvas id="brainTrace" role="img" aria-label="Live mean firing rate and percentage of neurons firing"></canvas></figure>
+      <figure class="trace-panel"><figcaption><strong>Walking drive</strong><output id="motorTraceValue">Waiting</output></figcaption><p><span class="trace-left">Left (solid)</span> <span class="trace-right">Right (dashed)</span> · controller input</p><canvas id="motorTrace" role="img" aria-label="Live left and right walking drive line graph"></canvas></figure>
+    </div>
+  </section>
+
+  <footer>
+    <div class="provenance">
+      <span>WHOLE MALE CNS</span>
+      <strong id="datasetStats">166,700 neurons</strong>
+      <small id="contactStats">25,582,938 edges</small>
+    </div>
+    <div class="controls">
+      <button id="pauseButton">Pause</button>
+      <button data-stimulus="forward">Forward</button>
+      <button data-stimulus="left">Turn left</button>
+      <button data-stimulus="right">Turn right</button>
+      <button data-stimulus="loom" title="A brief fast walk, modeling an escape response. No jump or flight is simulated.">Escape walk</button>
+      <button data-stimulus="backward">Backward</button>
+      <button id="wingButton" aria-pressed="false" title="Stimulates the DNg02 neurons. Their simulated firing drives physical wing joints. While the wings beat, the body is simply raised 3 mm and held level; no flight physics.">Flap wings</button>
+      <button id="resetButton">Reset</button>
+      <button data-stimulus="none">Release control</button>
+      <button id="randomButton" aria-pressed="false" title="Sends a random walking stimulus at random times, averaging the rate set beside it.">Random</button>
+      <label class="random-rate" title="Average random events per minute">
+        <input id="randomRate" type="number" min="1" max="120" step="1" value="20" aria-label="Random events per minute"> /min
+      </label>
+    </div>
+    <label class="assist">Controller assist
+      <input id="assist" type="range" min="0" max="1.2" step="0.05" value="0" disabled>
+      <output id="assistValue">Waiting</output>
+    </label>
+    <p id="disclaimer">Measured wiring, modeled dynamics and brain-body interface.</p>
+    <p id="visionReadout">Eye samples: waiting</p>
+    <p id="motorReadout">stimulus: none</p>
+  </footer>
+  <script src="/static/vendor/three/three.min.js"></script>
+  <script src="/static/vendor/three/OrbitControls.js"></script>
+  <script src="/static/vendor/three/STLLoader.js"></script>
+  <script src="/static/live-traces.js?v=4"></script>
+  <script src="/static/eye-view.js?v=5"></script>
+  <script src="/static/app.js?v=20"></script>
+</body>
+</html>

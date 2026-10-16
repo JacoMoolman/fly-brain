@@ -1,0 +1,63 @@
+# External dependency checkouts; keep gui/vendor browser libraries eligible.
+/vendor/
+
+# Local agent state and browser test artifacts.
+/.claude/
+/.playwright-cli/
+/output/
+
+# Python and JavaScript environments, caches, and build products.
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+node_modules/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+build/
+dist/
+
+# Downloaded data, models, runtime logs, and recordings.
+/datasets/
+/prepared/
+/models/
+/cache/
+/logs/
+/results/
+/recordings/
+/checkpoints/
+*.log
+MUJOCO_LOG.TXT
+*.npz
+*.npy
+*.bin
+*.zip
+*.pt
+*.pth
+*.safetensors
+
+# Machine-local secrets and temporary files.
+.env
+.env.*
+!.env.example
+*.tmp
+Thumbs.db
+Desktop.ini
+
+# Personal notes, blog material, and downloaded EM images (re-downloadable with EM-slices/scripts).
+/Claude_Research_Fly_Brain.md
+/fucingassgptresearch.md
+/realgoogleresearch.md
+/AUTONOMOUS-BEHAVIOR-PLAN.md
+/Blog/
+/EM-slices/raw_images/
+/EM-slices/video/
+/EM-slices/scout_overview.png
+*.jar
+*.mp4
+*.gif
+
+/START-NEURAL-CANVAS.cmd
+/scripts/Start-NeuralCanvas.ps1

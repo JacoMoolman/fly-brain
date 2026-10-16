@@ -1,0 +1,9 @@
+{
+  "projectRoot": "G:\\FLYBRAIN",
+  "assetRoot": "J:\\models\\fruit fly",
+  "datasetRoot": "J:\\models\\fruit fly\\datasets\\malecns-v1.0",
+  "environmentRoot": "J:\\models\\fruit fly\\envs",
+  "cacheRoot": "J:\\models\\fruit fly\\cache",
+  "recordingRoot": "J:\\models\\fruit fly\\recordings",
+  "resultRoot": "J:\\models\\fruit fly\\results"
+}
